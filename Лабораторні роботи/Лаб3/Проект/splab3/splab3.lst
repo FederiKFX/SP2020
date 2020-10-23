@@ -1,0 +1,99 @@
+Microsoft (R) Macro Assembler Version 14.27.29112.0	    10/11/20 21:57:26
+calc.asm						     Page 1 - 1
+
+
+				.386
+				.model flat, c
+				EXTRN   printf:near
+ 00000000			.data
+ 00000000 52 65 73 75 6C	fmt1 db "Result = ", 0;
+	   74 20 3D 20 00
+ 0000000A 25 6C 66 0D 0A	fmt2 db "%lf", 13, 10, 0;
+	   00
+ 00000010			temp qword ?
+	   0000000000000000
+ = 7AA02023			K equ 7AA02023h; (2057314339d)
+ 00000000			.code
+ 00000000			calcLab3 PROC
+ 00000000  9B DB E3		    finit
+ 00000003  55			    push ebp
+ 00000004  8B EC			mov ebp, esp
+
+ 00000006  C7 05 00000010 R		mov dword ptr temp, K
+	   7AA02023
+ 00000010  DF 2D 00000010 R		fild temp
+ 00000016  DD 45 08			fld qword ptr [ebp + 8]
+ 00000019  DC 4D 10			fmul qword ptr [ebp + 16]	;A * B
+ 0000001C  DE C1			fadd						;X = K + A * B
+
+ 0000001E  D9 45 18			fld dword ptr [ebp + 24]
+ 00000021  D9 E0			fchs
+ 00000023  DE C1			fadd						;X = K + A + B - C
+					
+ 00000025  D9 45 1C			fld dword ptr [ebp + 28]
+ 00000028  DC 75 20			fdiv qword ptr [ebp + 32]	;D / E
+ 0000002B  DE C1			fadd						;X = K + A * B - C + D / E
+
+						
+ 0000002D  DD 15 00000010 R		fst temp
+ 00000033  8B 0D 00000014 R		mov ecx, dword ptr temp[4]
+ 00000039  A1 00000010 R		mov eax, dword ptr temp[0]
+ 0000003E  51			    push ecx; for next call printf
+ 0000003F  50			    push eax; for next call printf
+
+ 00000040  68 00000000 R	    push OFFSET fmt1
+ 00000045  E8 00000000 E	    call printf
+ 0000004A  83 C4 04		    add esp, 4
+
+ 0000004D  68 0000000A R	    push OFFSET fmt2
+ 00000052  E8 00000000 E	    call printf
+ 00000057  83 C4 0C		    add esp, 12
+
+ 0000005A  5D				pop ebp
+ 0000005B  C3				ret
+
+ 0000005C			calcLab3 ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29112.0	    10/11/20 21:57:26
+calc.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000018 DWord	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000005C DWord	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+calcLab3 . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000005C Public C
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000001h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+K  . . . . . . . . . . . . . . .	Number	 7AA02023h   
+fmt1 . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+fmt2 . . . . . . . . . . . . . .	Byte	 0000000A _DATA	
+printf . . . . . . . . . . . . .	L Near	 00000000 FLAT	External C
+temp . . . . . . . . . . . . . .	QWord	 00000010 _DATA	
+
+	   0 Warnings
+	   0 Errors

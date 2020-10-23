@@ -1,0 +1,69 @@
+Microsoft (R) Macro Assembler Version 14.27.29112.0	    10/11/20 20:06:53
+asm2_1.asm						     Page 1 - 1
+
+
+				.386
+				.model flat, c
+				EXTRN K:dword
+ 00000000			.data
+ 00000000 0008			MULT dw 8
+ 00000002 0002			DIVI dw 2
+ 00000000			.code
+ 00000000			calc PROC
+ 00000000  55			    push ebp
+ 00000001  8B EC			mov ebp, esp
+ 00000003  8B 45 08			mov eax, dword ptr [ebp+8]
+ 00000006  66| F7 2D			imul MULT
+	   00000000 R
+ 0000000D  2B 45 0C			sub eax, dword ptr [ebp+12]
+ 00000010  8B D8			mov ebx, eax
+ 00000012  8B 45 10			mov eax, dword ptr [ebp+16]
+ 00000015  66| F7 3D			idiv DIVI
+	   00000002 R
+ 0000001C  03 C3			add eax, ebx
+ 0000001E  03 05 00000000 E		add eax, K
+ 00000024  5D				pop ebp
+ 00000025  C3				ret
+ 00000026			calc ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29112.0	    10/11/20 20:06:53
+asm2_1.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000004 DWord	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000026 DWord	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+calc . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000026 Public C
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000001h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+DIVI . . . . . . . . . . . . . .	Word	 00000002 _DATA	
+K  . . . . . . . . . . . . . . .	DWord	 00000000 FLAT	External C
+MULT . . . . . . . . . . . . . .	Word	 00000000 _DATA	
+
+	   0 Warnings
+	   0 Errors
