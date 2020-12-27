@@ -163,7 +163,7 @@ public:
 	}
 }StackT;
 
-StackT Stack;						//Стек
+StackT Stack, StackIf;						//Стек
 
 DataType Data;						//Структура-реєстр в якій зберігаються всі дані програми
 

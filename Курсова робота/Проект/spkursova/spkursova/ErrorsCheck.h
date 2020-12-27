@@ -209,6 +209,33 @@ int ErrorChecking()
 	label1:;
 	}
 
+	switch (Balans(i, LEOF, LIf, LThen))
+	{
+	case 1:
+		Err_num++;
+		fprintf(ef, "line %d: \tToo much 'Then'!\n", Data.LexTable[j].line);
+		break;
+	case 2:
+		Err_num++;
+		fprintf(ef, "line %d: \t'Then' expected!\n", Data.LexTable[j].line);
+		break;
+	default:
+		break;
+	}
+	switch (Balans(i, LEOF, LIf, LEndIf))
+	{
+	case 1:
+		Err_num++;
+		fprintf(ef, "line %d: \tToo much 'Endif'!\n", Data.LexTable[j].line);
+		break;
+	case 2:
+		Err_num++;
+		fprintf(ef, "line %d: \t'Endif' expected!\n", Data.LexTable[j].line);
+		break;
+	default:
+		break;
+	}
+
 	for (j = 0; j < Data.LexNum; j++) {
 		int s = 0, e = 0;
 		if (Data.LexTable[j].type == LStart)
@@ -320,32 +347,6 @@ int ErrorChecking()
 			{
 				Err_num++;
 				fprintf(ef, "line %d: \t'(' expected after 'If'!\n", Data.LexTable[j + 1].line);
-			}
-			for (size_t i = j + 1; Data.LexTable[i].type != LEOF; i++)
-			{
-				if (Data.LexTable[i].type == LThen)
-				{
-					break;
-				}
-				else if (Data.LexTable[i].type == LIf || Data.LexTable[i].type == LElse || Data.LexTable[i].type == LEndIf || Data.LexTable[i].type == LEnd)
-				{
-					Err_num++;
-					fprintf(ef, "line %d: \t'Then' expected after 'If'!\n", Data.LexTable[j + 1].line);
-					break;
-				}
-			}
-			for (size_t i = j + 1; Data.LexTable[i].type != LEOF; i++)
-			{
-				if (Data.LexTable[i].type == LEndIf)
-				{
-					break;
-				}
-				else if (Data.LexTable[i].type == LIf || Data.LexTable[i].type == LEnd)
-				{
-					Err_num++;
-					fprintf(ef, "line %d: \t'EndIf' expected!\n", Data.LexTable[j + 1].line);
-					break;
-				}
 			}
 			buf = IsExpression((j + 1), ef);
 		}

@@ -419,12 +419,12 @@ void GenASMCode(const char* str, FILE* f)
 				char buf[9];
 				sprintf(&buf[0], "%x", abs(Data.LexTable[Data.bufExprPostfixForm[n]].value));
 				buf[8] = '\0';
-				fprintf(f, "\tmov word ptr buf,%sh\n", buf);
+				fprintf(f, "\tmov dword ptr buf,%sh\n", buf);
 				fputs("\tfild buf\n", f);
 				if (Data.LexTable[Data.bufExprPostfixForm[n]].value < 0)
 				{
-					fputs("\tFLDZ\n", f);
-					fputs("\tFSUBR\n", f);
+					fputs("\tfldz\n", f);
+					fputs("\tfsubr\n", f);
 				}
 			}
 			else if ((Data.LexTable[Data.bufExprPostfixForm[n]].type == LLBraket) || (Data.LexTable[Data.bufExprPostfixForm[n]].type == LRBraket))
@@ -471,6 +471,7 @@ void PrintCode(FILE* f)
 	int ifLabelIndex = 0;
 	Lexema l;		//Поточна лексема
 	int i = 0;
+	StackIf.Init(&StackIf.S);
 
 	do			//Пошук початку коду
 	{
@@ -500,6 +501,7 @@ void PrintCode(FILE* f)
 		if (l.type == LIf)
 		{
 			ifLabelIndex++;
+			StackIf.Push(ifLabelIndex, &StackIf.S);
 			i = ConvertToPostfixForm(i + 1);
 			GenASMCode("buf", f);
 			fputs("\tcmp word ptr buf, 0\n", f);
@@ -507,7 +509,7 @@ void PrintCode(FILE* f)
 			{
 				if (Data.LexTable[j].type == LElse)
 				{
-					fprintf(f, "\tje ifLabel%d\n", ifLabelIndex);
+					fprintf(f, "je ifLabel%d\n", ifLabelIndex);
 					break;
 				}
 				else if (Data.LexTable[j].type == LEndIf)
@@ -519,11 +521,14 @@ void PrintCode(FILE* f)
 		}
 		if (l.type == LElse)
 		{
+			int ifLabelIndex = StackIf.Pop(&StackIf.S);
 			fprintf(f, "\tjmp endIf%d\n", ifLabelIndex);
 			fprintf(f, "ifLabel%d:\n", ifLabelIndex);
+			StackIf.Push(ifLabelIndex, &StackIf.S);
 		}
 		if (l.type == LEndIf)
 		{
+			int ifLabelIndex = StackIf.Pop(&StackIf.S);
 			fprintf(f, "endIf%d:\n", ifLabelIndex);
 		}
 		if (l.type == LPrint)
