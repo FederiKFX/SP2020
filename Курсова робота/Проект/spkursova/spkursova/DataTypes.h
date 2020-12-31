@@ -6,12 +6,14 @@
 #include "string.h"
 #include "stdlib.h"
 #include "ctype.h"
+#include <string>
 
 #define MAX_LEXEMS 1000
 #define MAX_IDENT 100
 #define MAX_BUF_SIZE 100
 #define STACK_SIZE 200
 #define MAX_LENGTH_TYPES 20
+#define LEX_SIZE 28
 
 enum TypeOfLex
 {
@@ -28,7 +30,7 @@ enum TypeOfLex
 	LIf,			// IF
 	LThen,			// THEN
 	LElse,			// ELSE
-	LEndIf,			// EndIf
+	//LEndIf,			// EndIf
 
 	LNewValue,		// ->
 	LAdd,			// +
@@ -51,6 +53,48 @@ enum TypeOfLex
 	LComma,			// ,
 	LEOF,			// EndFile
 	LUnknown
+};
+
+typedef struct DescLexem
+{
+	TypeOfLex type;
+	std::string desc;
+}DescLexma;
+
+DescLexma LexemsDesc[LEX_SIZE] =
+{
+	{LProgram, "Mainprogram"},
+	{LStart, "Start"},
+	{LData,	"Data"},
+	{LVarType, "Integer32"},
+	{LEnd, "End"},
+
+	{LScan, "Scan"},
+	{LPrint, "Print"},
+
+	{LIf, "If"},
+	{LThen, "Then"},
+	{LElse, "Else"},
+	//{LEndIf, "EndIf"},
+
+	{LNewValue, "->"},
+	{LAdd, "+"},
+	{LSub, "-"},
+	{LMul, "*"},
+	{LDiv, "DIV"},
+	{LMod, "MOD"},
+	{LEqu, "=="},
+	{LNotEqu, "!="},
+	{LGreate, ">="},
+	{LLess, "<="},
+	{LNot, "NOT"},
+	{LAnd, "AND"},
+	{LOr, "OR"},
+
+	{LLBraket, "("},
+	{LRBraket, ")"},
+	{LSeparator, ";"},
+	{LComma, ","}
 };
 
 //DATA

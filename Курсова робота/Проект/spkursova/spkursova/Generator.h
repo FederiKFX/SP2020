@@ -512,7 +512,7 @@ void PrintCode(FILE* f)
 					fprintf(f, "je ifLabel%d\n", ifLabelIndex);
 					break;
 				}
-				else if (Data.LexTable[j].type == LEndIf)
+				else if (Data.LexTable[j].type == LEnd)
 				{
 					fprintf(f, "\tje endIf%d\n", ifLabelIndex);
 					break;
@@ -526,7 +526,7 @@ void PrintCode(FILE* f)
 			fprintf(f, "ifLabel%d:\n", ifLabelIndex);
 			StackIf.Push(ifLabelIndex, &StackIf.S);
 		}
-		if (l.type == LEndIf)
+		if (l.type == LEnd && Data.LexTable[i + 1].type != LEOF)
 		{
 			int ifLabelIndex = StackIf.Pop(&StackIf.S);
 			fprintf(f, "endIf%d:\n", ifLabelIndex);

@@ -265,12 +265,12 @@ Lexema* GetNextLexem(FILE* f, int ii)
 				res->line = line;
 				break;
 			}
-			else if ((strcmp(buf, "Endif")) == 0)
+			/*/else if ((strcmp(buf, "Endif")) == 0)
 			{
 				res->type = LEndIf;
 				res->line = line;
 				break;
-			}
+			}*/
 			else if ((strcmp(buf, "Div")) == 0)
 			{
 				res->type = LDiv;
@@ -434,7 +434,7 @@ void PrintLexemsInFile()
 		case LIf: strncpy(type, "if", 3); break;
 		case LThen: strncpy(type, "then", 5); break;
 		case LElse: strncpy(type, "else", 5); break;
-		case LEndIf: strncpy(type, "endif", 6); break;
+		//case LEndIf: strncpy(type, "endif", 6); break;
 		case LNewValue: strncpy(type, "new value", 10); break;
 		case LAdd: strncpy(type, "add", 4); break;
 		case LSub: strncpy(type, "sub", 4); break;
