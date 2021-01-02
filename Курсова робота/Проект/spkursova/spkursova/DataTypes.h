@@ -27,10 +27,12 @@ enum TypeOfLex
 	LScan,			// Scan
 	LPrint,			// Print
 
+	LTarget,
+	LLabel,			// Label
+
 	LIf,			// IF
 	LThen,			// THEN
 	LElse,			// ELSE
-	//LEndIf,			// EndIf
 
 	LNewValue,		// ->
 	LAdd,			// +
@@ -53,48 +55,6 @@ enum TypeOfLex
 	LComma,			// ,
 	LEOF,			// EndFile
 	LUnknown
-};
-
-typedef struct DescLexem
-{
-	TypeOfLex type;
-	std::string desc;
-}DescLexma;
-
-DescLexma LexemsDesc[LEX_SIZE] =
-{
-	{LProgram, "Mainprogram"},
-	{LStart, "Start"},
-	{LData,	"Data"},
-	{LVarType, "Integer32"},
-	{LEnd, "End"},
-
-	{LScan, "Scan"},
-	{LPrint, "Print"},
-
-	{LIf, "If"},
-	{LThen, "Then"},
-	{LElse, "Else"},
-	//{LEndIf, "EndIf"},
-
-	{LNewValue, "->"},
-	{LAdd, "+"},
-	{LSub, "-"},
-	{LMul, "*"},
-	{LDiv, "DIV"},
-	{LMod, "MOD"},
-	{LEqu, "=="},
-	{LNotEqu, "!="},
-	{LGreate, ">="},
-	{LLess, "<="},
-	{LNot, "NOT"},
-	{LAnd, "AND"},
-	{LOr, "OR"},
-
-	{LLBraket, "("},
-	{LRBraket, ")"},
-	{LSeparator, ";"},
-	{LComma, ","}
 };
 
 //DATA

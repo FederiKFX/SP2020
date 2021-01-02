@@ -417,9 +417,9 @@ void GenASMCode(const char* str, FILE* f)
 			else if (Data.LexTable[Data.bufExprPostfixForm[n]].type == LNumber)
 			{
 				char buf[9];
-				sprintf(&buf[0], "%x", abs(Data.LexTable[Data.bufExprPostfixForm[n]].value));
+				sprintf(&buf[0], "%d", abs(Data.LexTable[Data.bufExprPostfixForm[n]].value));
 				buf[8] = '\0';
-				fprintf(f, "\tmov dword ptr buf,%sh\n", buf);
+				fprintf(f, "\tmov dword ptr buf, %s\n", buf);
 				fputs("\tfild buf\n", f);
 				if (Data.LexTable[Data.bufExprPostfixForm[n]].value < 0)
 				{
@@ -530,6 +530,14 @@ void PrintCode(FILE* f)
 		{
 			int ifLabelIndex = StackIf.Pop(&StackIf.S);
 			fprintf(f, "endIf%d:\n", ifLabelIndex);
+		}
+		if (l.type == LTarget)
+		{
+			fprintf(f, "\tjmp %s\n", Data.LexTable[i].name);
+		}
+		if (l.type == LLabel)
+		{
+			fprintf(f, "%s\n", Data.LexTable[i].name);
 		}
 		if (l.type == LPrint)
 		{

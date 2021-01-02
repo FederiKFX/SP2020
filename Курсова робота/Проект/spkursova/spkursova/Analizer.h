@@ -192,7 +192,7 @@ Lexema* GetNextLexem(FILE* f, int ii)
 			for (i = 1;; ++i)
 			{
 				ch = getc(f);
-				if ((isdigit(ch) != 0) || (isalpha(ch) != 0) || (ch == '_')) buf[i] = ch;
+				if ((isdigit(ch) != 0) || (isalpha(ch) != 0) || (ch == '_') || (ch == ':')) buf[i] = ch;
 				else break;
 			}
 			int j;
@@ -247,6 +247,42 @@ Lexema* GetNextLexem(FILE* f, int ii)
 				res->line = line;
 				break;
 			}
+			else if ((strcmp(buf, "Goto")) == 0)
+			{
+				ch = getc(f);
+				while (!isalpha(ch))
+				{
+					ch = getc(f);
+				}
+				int i = 0;
+				buf[0] = ch;
+				for (i = 1;; ++i)
+				{
+					ch = getc(f);
+					if ((isdigit(ch) != 0) || (isalpha(ch) != 0)) buf[i] = ch;
+					else break;
+				}
+				ungetc(ch, f);
+				buf[i] = '\0';
+				strncpy(res->name, buf, i);
+
+				if (i <= 8)
+				{
+					strncpy(res->name, buf, i+1);
+					res->type = LTarget;
+					res->value = 0;
+					res->line = line;
+					break;
+				}
+				else
+				{
+					strncpy(res->name, buf, i);
+					res->type = LUnknown;
+					res->value = 0;
+					res->line = line;
+					break;
+				}
+			}
 			else if ((strcmp(buf, "If")) == 0)
 			{
 				res->type = LIf;
@@ -265,12 +301,6 @@ Lexema* GetNextLexem(FILE* f, int ii)
 				res->line = line;
 				break;
 			}
-			/*/else if ((strcmp(buf, "Endif")) == 0)
-			{
-				res->type = LEndIf;
-				res->line = line;
-				break;
-			}*/
 			else if ((strcmp(buf, "Div")) == 0)
 			{
 				res->type = LDiv;
@@ -305,6 +335,14 @@ Lexema* GetNextLexem(FILE* f, int ii)
 			{
 				strncpy(res->name, buf, i);
 				res->type = LIdentifier;
+				res->value = 0;
+				res->line = line;
+				break;
+			}
+			else if (buf[i-1] == ':' && i <= 8)
+			{
+				strncpy(res->name, buf, i);
+				res->type = LLabel;
 				res->value = 0;
 				res->line = line;
 				break;
@@ -434,6 +472,9 @@ void PrintLexemsInFile()
 		case LIf: strncpy(type, "if", 3); break;
 		case LThen: strncpy(type, "then", 5); break;
 		case LElse: strncpy(type, "else", 5); break;
+		case LLabel: strncpy(type, "label", 6); break;
+		case LTarget: strncpy(type, "target", 7); break;
+		//case LGoto: strncpy(type, "goto", 5); break;
 		//case LEndIf: strncpy(type, "endif", 6); break;
 		case LNewValue: strncpy(type, "new value", 10); break;
 		case LAdd: strncpy(type, "add", 4); break;
@@ -449,7 +490,7 @@ void PrintLexemsInFile()
 		case LAnd: strncpy(type, "and", 4); break;
 		case LOr: strncpy(type, "or", 3); break;
 		case LLBraket: strncpy(type, "left braket", 12); break;
-		case LRBraket: strncpy(type, "right braket", 3); break;
+		case LRBraket: strncpy(type, "right braket", 13); break;
 		case LNumber: strncpy(type, "number", 7); break;
 		case LSeparator: strncpy(type, "separator", 10); break;
 		case LComma: strncpy(type, "comma", 6); break;

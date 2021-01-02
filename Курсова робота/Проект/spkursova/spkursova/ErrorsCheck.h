@@ -308,6 +308,29 @@ int ErrorChecking()
 			}
 			Err_num = Err_num + buf;
 		}
+		if (Data.LexTable[j].type == LTarget)
+		{
+			bool enable = 0;
+			int i = 0;
+			char buf[50];
+			while (Data.LexTable[j].name[i] != '\0')
+			{
+				buf[i] = Data.LexTable[j].name[i];
+				i++;
+			}
+			buf[i] = ':';
+			buf[++i] = '\0';
+			i = 0;
+			while (Data.LexTable[i].type != LEOF)
+			{
+				if ((strcmp(Data.LexTable[i].name, buf)) == 0)
+				{
+					enable = 1;
+				}
+				i++;
+			}
+			!enable ? fprintf(ef, "line %d: \tUnknown target!(%s)\n", Data.LexTable[j].line, Data.LexTable[j].name), Err_num += 1 : NULL;
+		}
 		if (Data.LexTable[j].type == LPrint)
 		{
 			int buf, brak;
@@ -366,13 +389,11 @@ int ErrorChecking()
 		}
 		if (Data.LexTable[j].type == LThen)				//перевірка for
 		{
-			int buf;
 			if (Data.LexTable[j + 1].type != LStart)
 			{
 				Err_num++;
 				fprintf(ef, "line %d: \t'Start' expected after 'Then'!\n", Data.LexTable[j + 1].line);
 			}
-			buf = IsExpression((j + 1), ef);
 		}
 		if (Data.LexTable[j].type == LEOF) break;
 	}
