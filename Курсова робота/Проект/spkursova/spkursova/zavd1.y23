@@ -1,0 +1,10 @@
+Mainprogram
+Start
+Data Integer32 _a,_c,_d,_k,_r;
+_k->2057314;
+Scan(_a);
+Scan(_c);
+Scan(_d);
+_r->(_a * 8 -_c + _d Div 2 + _k);
+Print(_r);
+End

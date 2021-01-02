@@ -1,0 +1,41 @@
+Mainprogram
+Start
+Data Integer32 _vAL,_dIV,_rEM;
+Scan(_vAL);
+_vAL->(_vAL+1);
+for1:
+_dIV->(_vAL- 1);
+for2:
+If(Not(_dIV >= 1)) Then
+Start
+Goto for2end;
+End
+_rEM->_vAL;
+
+for3:
+If(Not((_rEM >= _dIV) Or (_rEM == _dIV)) Then
+Start
+Goto for3end;
+End
+_rEM->(_rEM - _dIV);
+Goto for3;
+for3end:
+If(Not(_rEM)) Then
+Start
+Goto for2end;
+End
+_dIV->(_dIV - 1);
+Goto for2;
+for2end:
+
+If(_dIV == 1) Then
+Start
+Goto for1end;
+End
+_vAL->(_vAL + 1);
+Goto for1;
+for1end:
+
+Print(_vAL);
+
+End
