@@ -3,8 +3,26 @@
 #include "Analizer.h"
 #include "ErrorsCheck.h"
 #include "Generator.h"
+#include <process.h>
+#include <io.h>
 
-int main(int argc, char* argv[])
+bool directory_exists(const std::string& directory)
+{
+	if (!directory.empty())
+	{
+		if (_access(directory.c_str(), 0) == 0)
+		{
+			struct stat status;
+			stat(directory.c_str(), &status);
+			if (status.st_mode & S_IFDIR)
+				return true;
+		}
+	}
+	// if any condition fails
+	return false;
+}
+
+int main(int argc, std::string* argv)
 {
 	printf("=================================================================================================\n");
 	printf("TRANSLATOR (y23 -> ASSEMBLER)\n");
@@ -21,28 +39,30 @@ int main(int argc, char* argv[])
 	}
 
 	// Obtaining and formation names of incoming and outgoing files
-	strcpy(Data.InputFileName, argv[1]);
+	Data.InputFileName = argv->c_str();
 
-	printf("Start translating file: %s\n", Data.InputFileName);
+	printf("Start translating file: %s\n", Data.InputFileName.c_str());
 
-	if ((InF = fopen(Data.InputFileName, "r")) == 0)
+	if ((InF = fopen(Data.InputFileName.c_str(), "r")) == 0)
 	{
-		printf("Error: Can not open file: %s\n", Data.InputFileName);
+		printf("Error: Can not open file: %s\n", Data.InputFileName.c_str());
 		getchar();
 		exit(1);
 	}
 
-	strncpy(Data.OutputFileName, Data.InputFileName, strlen(Data.InputFileName) - 3);
-	strcat(Data.OutputFileName, "asm");
-	printf("Output file: %s\n", Data.OutputFileName);
+	int k = Data.InputFileName.size();
+	while (k > 0)
+	{
+		if (Data.InputFileName[k] == '\\')
+		{
+			k++;
+			break;
+		}
+		k--;
+	}
+	Data.InputFileName.copy(Data.OutputFileName, Data.InputFileName.size() - k - 4, k);
+	printf("Output file: %s\n", std::string(std::string(Data.OutputFileName) + ".asm").c_str());
 	printf("=================================================================================================\n");
-	
-	if ((OutF = fopen(Data.OutputFileName, "w")) == 0)
-	{
-		printf("Error: Can not create file: %s\n", Data.OutputFileName);
-		getchar();
-		exit(1);
-	}
 
 	// Breaking into tokens and printing into file
 	printf("Breaking into lexems are starting...\n");
@@ -64,11 +84,32 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
+		if ((OutF = fopen(std::string(std::string(Data.OutputFileName) + ".asm").c_str(), "w")) == 0)
+		{
+			printf("Error: Can not create file: %s\n", std::string(std::string(Data.OutputFileName) + ".asm").c_str());
+			getchar();
+			exit(1);
+		}
 		printf("Code generation is starting...\n");
 		GenerateCode(OutF);
 		printf("Code generation is finish.\n");
+		fclose(OutF);
+		printf("=================================================================================================\n");
+		if (directory_exists("masm32"))
+		{
+			system(std::string("masm32\\bin\\ml /c /coff " + std::string(Data.OutputFileName) + ".asm").c_str());
+			system(std::string("masm32\\bin\\Link /SUBSYSTEM:WINDOWS " + std::string(Data.OutputFileName) + ".obj").c_str());
+			system(std::string("del " + std::string(Data.OutputFileName) + ".obj").c_str());
+		}
+		else
+		{
+			printf("WARNING!\n");
+			printf("Can't compile asm file, because masm32 don't exist.\n");
+		}
+		
 		printf("=================================================================================================\n");
 		printf("Done!\n");
 	}
+	system("pause");
 	return 0;
 }

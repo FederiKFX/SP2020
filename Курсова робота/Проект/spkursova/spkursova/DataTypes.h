@@ -92,8 +92,8 @@ typedef struct L
 
 	int numberErrors;
 
-	char InputFileName[50];
-	char OutputFileName[50];
+	std::string InputFileName;
+	/*std::string*/ char OutputFileName[50];
 
 	int bufExprPostfixForm[MAX_BUF_SIZE];	//Буфер для виразу в постфіксній формі
 }DataType;
