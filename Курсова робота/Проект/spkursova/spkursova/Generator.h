@@ -2,9 +2,9 @@
 void BeginASMFile(FILE* fout)
 {
 	fprintf(fout, ".386\n.model flat, stdcall\noption casemap :none\n");
-	fprintf(fout, "include \\masm32\\include\\windows.inc\ninclude \\masm32\\include\\kernel32.inc\ninclude \\masm32\\include\\masm32.inc\ninclude \\masm32\\include\\user32.inc\ninclude \\masm32\\include\\msvcrt.inc\n");
-	fprintf(fout, "includelib \\masm32\\lib\\kernel32.lib\nincludelib \\masm32\\lib\\masm32.lib\nincludelib \\masm32\\lib\\user32.lib\nincludelib \\masm32\\lib\\msvcrt.lib\n");
-	fprintf(fout, "\nCHECK_DIVISION_BY_ZERO MACRO\n\tfldz\n\tfcomp\n\tfstsw ax\n\tsahf\n\tjne end_check\n\tinvoke WriteConsoleA, hConsoleOutput, ADDR ErrorMessage, SIZEOF ErrorMessage, ADDR NumberOfCharsWrite, 0\n\tjmp exit_label\nend_check:\nENDM\n");
+	fprintf(fout, "include masm32\\include\\windows.inc\ninclude masm32\\include\\kernel32.inc\ninclude masm32\\include\\masm32.inc\ninclude masm32\\include\\user32.inc\ninclude masm32\\include\\msvcrt.inc\n");
+	fprintf(fout, "includelib masm32\\lib\\kernel32.lib\nincludelib masm32\\lib\\masm32.lib\nincludelib masm32\\lib\\user32.lib\nincludelib masm32\\lib\\msvcrt.lib\n");
+	//fprintf(fout, "\nCHECK_DIVISION_BY_ZERO MACRO\n\tfldz\n\tfcomp\n\tfstsw ax\n\tsahf\n\tjne end_check\n\tinvoke WriteConsoleA, hConsoleOutput, ADDR ErrorMessage, SIZEOF ErrorMessage, ADDR NumberOfCharsWrite, 0\n\tjmp exit_label\nend_check:\nENDM\n");
 	fprintf(fout, "\n.DATA");
 }
 void BeginCodeSegm(FILE* fout)
@@ -21,10 +21,6 @@ void BeginCodeSegm(FILE* fout)
 
 void CheckPresent()			//Визначення присутності операторів put i get
 {
-	/*do
-	{
-		++i;
-	} while (Data.LexTable[i - 1].type != LVarType);*/
 	for (int i = 0; Data.LexTable[i].type != LEOF; ++i)
 	{
 		if (Data.LexTable[i].type == LScan) Data.IsPresentInput = true;
@@ -36,6 +32,7 @@ void CheckPresent()			//Визначення присутності операторів put i get
 		if (Data.LexTable[i].type == LEqu || Data.LexTable[i].type == LNotEqu) Data.IsPresentEqu = true;
 		if (Data.LexTable[i].type == LGreate) Data.IsPresentGreate = true;
 		if (Data.LexTable[i].type == LLess) Data.IsPresentLess = true;
+		if (Data.LexTable[i].type == LDiv) Data.IsPresentDiv = true;
 		if (Data.IsPresentInput &&
 			Data.IsPresentOutput &&
 			Data.IsPresentAnd &&
@@ -43,7 +40,8 @@ void CheckPresent()			//Визначення присутності операторів put i get
 			Data.IsPresentNot &&
 			Data.IsPresentEqu &&
 			Data.IsPresentGreate &&
-			Data.IsPresentLess) break;
+			Data.IsPresentLess &&
+			Data.IsPresentDiv) break;
 	}
 }
 
@@ -202,7 +200,7 @@ void PrintGE(FILE* f)
 	fputs("\tmov eax,lb1\n", f);
 	fputs("\tmov edx,lb2\n", f);
 	fputs("\tcmp edx,eax\n", f);
-	fputs("\tjl lov\n", f);
+	fputs("\tjle lov\n", f);
 	fputs("\tfld1\n", f);
 	fputs("\tjmp gr_fin\n", f);
 	fputs("lov:\n", f);
@@ -227,7 +225,7 @@ void PrintLE(FILE* f)
 	fputs("\tmov eax, lb1\n", f);
 	fputs("\tmov edx, lb2\n", f);
 	fputs("\tcmp edx,eax\n", f);
-	fputs("\tjg gr\n", f);
+	fputs("\tjge gr\n", f);
 	fputs("lo:\n", f);
 	fputs("\tfld1\n", f);
 	fputs("\tjmp less_fin\n", f);
@@ -239,6 +237,25 @@ void PrintLE(FILE* f)
 	fputs("\tpop eax\n\n", f);
 	fputs("\tret\n", f);
 	fputs("Less_ ENDP\n", f);
+	fputs(";=========================================\n\n", f);
+}
+void PrintCheck(FILE* f)
+{
+	fputs("\n;===Procedure Check=======================\n", f);
+	fputs("Check_ PROC\n", f);
+	fputs("\tpush eax\n", f);
+	fputs("\tfldz\n", f);
+	fputs("\tfcomp\n", f);
+	fputs("\tfstsw ax\n", f);
+	fputs("\tsahf\n", f);
+	fputs("\tjne end_check\n", f);
+	fputs("invoke WriteConsoleA,hConsoleOutput,ADDR msg1310,SIZEOF msg1310,ADDR NumberOfCharsWrite,0\n", f);
+	fputs("\tinvoke WriteConsoleA, hConsoleOutput, ADDR ErrorMessage, SIZEOF ErrorMessage, ADDR NumberOfCharsWrite, 0\n", f);
+	fputs("\tjmp exit_label\n", f);
+	fputs("end_check:\n", f);
+	fputs("\tpop eax\n", f);
+	fputs("\tret\n", f);
+	fputs("Check_ ENDP\n", f);
 	fputs(";=========================================\n\n", f);
 }
 
@@ -287,6 +304,7 @@ void PrintEnding(FILE* f)
 	if (Data.IsPresentEqu) PrintEQ(f);
 	if (Data.IsPresentGreate) PrintGE(f);
 	if (Data.IsPresentLess) PrintLE(f);
+	if (Data.IsPresentDiv) PrintCheck(f);
 	fputs("end start\n", f);
 }
 
@@ -440,7 +458,7 @@ void GenASMCode(const char* str, FILE* f)
 				break;
 			case LSub: fputs("\tfsub\n", f);
 				break;
-			case LDiv: fputs("\tCHECK_DIVISION_BY_ZERO\n", f);
+			case LDiv: fputs("\tcall Check_\n", f);
 				fputs("\tfdiv\n", f);
 				break;
 			case LMod: fputs("\tcall Mod_\n", f);

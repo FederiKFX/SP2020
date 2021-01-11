@@ -88,7 +88,8 @@ typedef struct L
 	IsPresentNot,
 	IsPresentEqu,
 	IsPresentGreate,
-	IsPresentLess;
+	IsPresentLess,
+	IsPresentDiv;
 
 	int numberErrors;
 

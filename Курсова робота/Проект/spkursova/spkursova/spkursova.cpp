@@ -5,6 +5,7 @@
 #include "Generator.h"
 #include <process.h>
 #include <io.h>
+#include <iostream>
 
 bool directory_exists(const std::string& directory)
 {
@@ -32,23 +33,23 @@ int main(int argc, std::string* argv)
 	// Checking the number of arguments to be passed from the command line
 	if (argc != 2)
 	{
-		printf("Warning! Invalid parameter list!\n");
-		printf("Example: spkursova.exe inputFile.y23");
-		getchar();
-		exit(1);
+		printf("Input file name\n");
+		std::cin >> Data.InputFileName;
 	}
-
-	// Obtaining and formation names of incoming and outgoing files
-	Data.InputFileName = argv->c_str();
-
-	printf("Start translating file: %s\n", Data.InputFileName.c_str());
+	else
+	{
+		// Obtaining and formation names of incoming and outgoing files
+		Data.InputFileName = argv->c_str();
+	}
 
 	if ((InF = fopen(Data.InputFileName.c_str(), "r")) == 0)
 	{
 		printf("Error: Can not open file: %s\n", Data.InputFileName.c_str());
-		getchar();
+		system("pause");
 		exit(1);
 	}
+
+	printf("Start translating file: %s\n", Data.InputFileName.c_str());
 
 	int k = Data.InputFileName.size();
 	while (k > 0)
@@ -87,7 +88,7 @@ int main(int argc, std::string* argv)
 		if ((OutF = fopen(std::string(std::string(Data.OutputFileName) + ".asm").c_str(), "w")) == 0)
 		{
 			printf("Error: Can not create file: %s\n", std::string(std::string(Data.OutputFileName) + ".asm").c_str());
-			getchar();
+			system("pause");
 			exit(1);
 		}
 		printf("Code generation is starting...\n");
@@ -104,7 +105,7 @@ int main(int argc, std::string* argv)
 		else
 		{
 			printf("WARNING!\n");
-			printf("Can't compile asm file, because masm32 don't exist.\n");
+			printf("Can't compile asm file, because masm32 doesn't exist.\n");
 		}
 		
 		printf("=================================================================================================\n");
